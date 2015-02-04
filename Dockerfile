@@ -39,7 +39,7 @@ RUN mkdir -p /src \
     && curl -f -L -O https://tools.netsa.cert.org/releases/silk-$SILK_VERSION.tar.gz \
     && tar zxvf silk-$SILK_VERSION.tar.gz \
     && cd /src/silk-$SILK_VERSION \
-    && ./configure \
+    && ./configure --enable-ipv6 \
     && make \
     && make install
 
