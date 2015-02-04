@@ -27,7 +27,7 @@ RUN apt-get update \
 RUN mkdir -p /src \
     && cd /src \
     && curl -f -L -O https://tools.netsa.cert.org/releases/libfixbuf-$LIBFIXBUF_VERSION.tar.gz \
-    && tar zxvf libfixbuf-$LIBFIXBUF_VERSION.tar.gz \
+    && tar zxf libfixbuf-$LIBFIXBUF_VERSION.tar.gz \
     && cd /src/libfixbuf-$LIBFIXBUF_VERSION \
     && ./configure --with-openssl \
     && make \
@@ -37,7 +37,7 @@ RUN mkdir -p /src \
 RUN mkdir -p /src \
     && cd /src \
     && curl -f -L -O https://tools.netsa.cert.org/releases/silk-$SILK_VERSION.tar.gz \
-    && tar zxvf silk-$SILK_VERSION.tar.gz \
+    && tar zxf silk-$SILK_VERSION.tar.gz \
     && cd /src/silk-$SILK_VERSION \
     && ./configure --enable-ipv6 \
     && make \
