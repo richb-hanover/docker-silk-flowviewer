@@ -1,0 +1,13 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+  - docker build --pull -t redjack/silk .
+  - docker run redjack/silk rwfilter --version
+
+# In addition to pull requests, always build these branches
+branches:
+  only:
+    - master
