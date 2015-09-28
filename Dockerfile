@@ -31,7 +31,8 @@ RUN mkdir -p /src \
     && cd /src/libfixbuf-$LIBFIXBUF_VERSION \
     && ./configure --with-openssl \
     && make \
-    && make install
+    && make install \
+    && rm -rf /src
 
 # Download and build SiLK
 RUN mkdir -p /src \
@@ -41,6 +42,7 @@ RUN mkdir -p /src \
     && cd /src/silk-$SILK_VERSION \
     && ./configure --enable-ipv6 \
     && make \
-    && make install
+    && make install \
+    && rm -rf /src
 
 RUN ldconfig
