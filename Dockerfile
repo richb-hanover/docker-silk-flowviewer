@@ -1,8 +1,8 @@
 FROM ubuntu:trusty
 MAINTAINER Andy Freeland <andy.freeland@redjack.com>
 
-ENV LIBFIXBUF_VERSION 1.6.2
-ENV SILK_VERSION 3.10.1
+ENV LIBFIXBUF_VERSION 1.7.0
+ENV SILK_VERSION 3.10.2
 
 # Install libfixbuf and SiLK dependencies
 RUN apt-get update \
