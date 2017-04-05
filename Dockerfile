@@ -105,3 +105,18 @@ RUN curl https://github.com/richb-hanover/FlowViewer/archive/master.zip -0L > /t
 # ==== Install the replacement VirtualHost file with +ExecCGI
 
 COPY 000-default.conf /etc/apache2/sites-available/ 
+
+# ==== Enable the cgi mod
+
+RUN cd /etc/apache2/mods-enabled && \
+    ln -s ../mods-available/cgi.load
+
+# ==== Start Apache2 when starting the image
+
+# Use docker run -d -p 80:80 docker-silk /usr/sbin/apache2ctl -D FOREGROUND 
+
+# not...
+# ENTRYPOINT ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+# ENTRYPOINT ["service", "apache2", "start"]
+# CMD service apache2 start && tail -F /var/log/apache2/error.log
+
