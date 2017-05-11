@@ -116,7 +116,7 @@ RUN cd /etc/apache2/mods-enabled && \
 # Use docker run -d -p 80:80 docker-silk /usr/sbin/apache2ctl -D FOREGROUND 
 
 # not...
-# ENTRYPOINT ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
 # ENTRYPOINT ["service", "apache2", "start"]
 # CMD service apache2 start && tail -F /var/log/apache2/error.log
 

@@ -7,6 +7,19 @@ Docker image containing SiLK and libfixbuf cloned from https://github.com/redjac
 
 Added code to install FlowViewer from https://sourceforge.net/p/flowviewer/wiki/Home/
 
+## To build the Docker instance
+
+```
+docker build -t silk-flowviewer .
+```
+
+## To run it and/or look around:
+
+```
+docker run -d silk-flowviewer
+docker ps # to get container name
+docker exec -i -t <container-name> /bin/bash
+```
 References:
 
 
