@@ -15,6 +15,7 @@ ENV FLOWVIEWER 4.6.1
 # Other environmental variables
 ENV USERHOME  /root
 ENV RRD_PATH /opt/rrdtool
+ENV TERM ansi
 
 # ========= Installing Dependencies ==============
 # Install libfixbuf and SiLK dependencies
