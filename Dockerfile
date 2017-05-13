@@ -13,13 +13,27 @@ ENV RRD_TOOL 1.6.0
 ENV FLOWVIEWER 4.6.1
 
 # Other environmental variables
-ENV USERHOME  /root
 ENV RRD_PATH /opt/rrdtool
 ENV TERM ansi
 
+ENV USERACCT flowviewer
+
+# ---------------------------
+# Work as user USERACCT, not root
+
+RUN useradd -ms /bin/bash $USERACCT \
+    && echo "$USERACCT ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERACCT \
+    && chmod 0440 /etc/sudoers.d/$USERACCT \
+    && ls /etc/sudoers.d \
+    && cat /etc/sudoers.d/README
+
+USER $USERACCT
+ENV USERHOME /home/$USERACCT
+WORKDIR $USERHOME
+
 # ========= Installing Dependencies ==============
 # Install libfixbuf and SiLK dependencies
-RUN apt-get update && apt-get -y install \
+RUN sudo apt-get update && sudo apt-get -y install \
     apache2 \
     apt-utils \
     bison \
@@ -46,30 +60,16 @@ RUN apt-get update && apt-get -y install \
     unzip \
     zlib1g 
 
-# ========= Installing SiLK & libfixbuf ==============
-# Download and build libfixbuf
-RUN mkdir -p /src \
-    && cd /src \
-    && curl -f -L -O https://tools.netsa.cert.org/releases/libfixbuf-$LIBFIXBUF_VERSION.tar.gz \
-    && tar zxf libfixbuf-$LIBFIXBUF_VERSION.tar.gz \
-    && cd /src/libfixbuf-$LIBFIXBUF_VERSION \
-    && ./configure --with-openssl \
-    && make \
-    && make install \
-    && rm -rf /src
+# ============ Install SiLK &c ==============
+# from http://flowbat.com
 
-# Download and build SiLK
-RUN mkdir -p /src \
-    && cd /src \
-    && curl -f -L -O https://tools.netsa.cert.org/releases/silk-$SILK_VERSION.tar.gz \
-    && tar zxf silk-$SILK_VERSION.tar.gz \
-    && cd /src/silk-$SILK_VERSION \
-    && ./configure --enable-ipv6 \
-    && make \
-    && make install \
-    && rm -rf /src
+COPY scripts/silkonabox.sh $USERHOME
 
-RUN ldconfig
+RUN ls -al \
+    && sudo chown $USERACCT:$USERACCT silkonabox.sh \
+    && chmod +x silkonabox.sh \
+    && export TERM=ansi \
+    && ./silkonabox.sh
 
 # ============ Installing FlowViewer Dependencies =================
 
@@ -83,41 +83,56 @@ RUN cpanm GD \
  # Download and install RDDTool
  # See: https://github.com/rickdesantis/docker-files/blob/master/rrdtool/Dockerfile
 WORKDIR $USERHOME
-RUN curl http://oss.oetiker.ch/rrdtool/pub/rrdtool-$RRD_TOOL.tar.gz -OL && \
-    tar zxf rrdtool-$RRD_TOOL.tar.gz && \
-    mkdir -p $RRD_PATH && \
-    cd rrdtool-$RRD_TOOL && ./configure --prefix=$RRD_PATH && make && make install 
+RUN curl http://oss.oetiker.ch/rrdtool/pub/rrdtool-$RRD_TOOL.tar.gz -OL \
+    && tar zxf rrdtool-$RRD_TOOL.tar.gz \
+    && sudo mkdir -p $RRD_PATH \
+    && cd rrdtool-$RRD_TOOL && ./configure --prefix=$RRD_PATH && make && sudo make install 
 
 # ============ Installing FlowViewer =================
 # Retrieve FlowViewer sources from richb github.com repo - version 4.6.1 reflects refactoring of files
 
 WORKDIR /var/www
 
-RUN curl https://github.com/richb-hanover/FlowViewer/archive/master.zip -0L > /tmp/FlowViewer-master.zip && \
-    unzip /tmp/FlowViewer-master.zip -d /tmp && \
-    rm -rf html && \
-    mv /tmp/FlowViewer-master/html/ . && \
-    mv /tmp/FlowViewer-master/cgi-bin/ . && \
-    chown -R www-data: html/ && \
-    find html -type f -exec chmod 664 {} + -o -type d -exec chmod 775 {} + && \
-    chown -R www-data: cgi-bin && \
-    chmod -R +x cgi-bin 
+RUN    curl https://github.com/richb-hanover/FlowViewer/archive/master.zip -0L > /tmp/FlowViewer-master.zip \
+    && unzip /tmp/FlowViewer-master.zip -d /tmp \
+    && sudo rm -rf html  \
+    && sudo mv /tmp/FlowViewer-master/html/ . \
+    && sudo mv /tmp/FlowViewer-master/cgi-bin/ . \
+    && sudo chown -R www-data: html/ \
+    && sudo find html -type f -exec chmod 664 {} + -o -type d -exec chmod 775 {} + \
+    && sudo chown -R www-data: cgi-bin \
+    && sudo chmod -R +x cgi-bin 
 
 # ==== Install the replacement VirtualHost file with +ExecCGI
 
-COPY 000-default.conf /etc/apache2/sites-available/ 
+COPY scripts/000-default.conf /etc/apache2/sites-available/ 
 
 # ==== Enable the cgi mod
 
-RUN cd /etc/apache2/mods-enabled && \
-    ln -s ../mods-available/cgi.load
+RUN cd /etc/apache2/mods-enabled \
+  && sudo ln -s ../mods-available/cgi.load
 
 # ==== Start Apache2 when starting the image
 
-# Use docker run -d -p 80:80 docker-silk /usr/sbin/apache2ctl -D FOREGROUND 
+# Use docker run -d -p 8080:80 -p 2055:2055 flowviewer-silk 
 
 # not...
-CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+# CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
 # ENTRYPOINT ["service", "apache2", "start"]
 # CMD service apache2 start && tail -F /var/log/apache2/error.log
+
+WORKDIR $USERHOME
+COPY scripts/startup.sh          startup.sh
+COPY scripts/start_apache2.sh    start_apache2.sh
+COPY scripts/start_rwflowpack.sh start_rwflowpack.sh
+COPY scripts/start_yaf.sh        start_yaf.sh
+RUN    sudo chmod +x startup.sh \
+    && sudo chmod +x start_apache2.sh \
+    && sudo chmod +x start_rwflowpack.sh \
+    && sudo chmod +x start_yaf.sh 
+
+EXPOSE 80
+EXPOSE 2055
+
+CMD ./startup.sh
 

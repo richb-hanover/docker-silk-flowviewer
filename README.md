@@ -10,15 +10,19 @@ Added code to install FlowViewer from https://sourceforge.net/p/flowviewer/wiki/
 ## To build the Docker instance
 
 ```
-docker build -t silk-flowviewer .
+docker build -t flowviewer_silk .
 ```
 
 ## To run it and/or look around:
 
 ```
-docker run -d silk-flowviewer
+docker run -d -p 8080:80 -p 2055:2055 flowviewer-silk 
 docker ps # to get container name
 docker exec -i -t <container-name> /bin/bash
+
+- or -
+docker run -d -p 9999:80 silk-flowviewer /usr/sbin/apache2ctl -D FOREGROUND
+then go to http://localhost:9999 
 ```
 References:
 
