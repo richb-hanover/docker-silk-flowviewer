@@ -201,6 +201,7 @@ EOF
   sudo mv silk.conf /etc/ld.so.conf.d/
   sudo ldconfig
   sudo cp site/twoway/silk.conf /data
+  sudo chown flowviewer:flowviewer /data/silk.conf
 
   cat > sensors.conf << "EOF"
    probe S0 ipfix

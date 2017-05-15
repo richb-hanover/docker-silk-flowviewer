@@ -38,10 +38,12 @@ RUN sudo apt-get update && sudo apt-get -y install \
     apt-utils \
     bison \
     build-essential \
+    checkinstall \
     cpanminus \
     curl \
     expat \
     flex \
+    glib2.0 \
     groff \
     libc-ares-dev \
     libdbi-perl \
@@ -51,13 +53,16 @@ RUN sudo apt-get update && sudo apt-get -y install \
     libgnutls-dev \
     liblzo2-dev \
     libpango1.0-dev \
-    libpcap0.8-dev \
+    libpcap-dev \
     libpcre3-dev \
     libssl-dev \
     libxml2-dev \
+    make \
     man \
     pkg-config \
+    python-dev \
     unzip \
+    wget \
     zlib1g 
 
 # ============ Install SiLK &c ==============
@@ -86,7 +91,11 @@ WORKDIR $USERHOME
 RUN curl http://oss.oetiker.ch/rrdtool/pub/rrdtool-$RRD_TOOL.tar.gz -OL \
     && tar zxf rrdtool-$RRD_TOOL.tar.gz \
     && sudo mkdir -p $RRD_PATH \
-    && cd rrdtool-$RRD_TOOL && ./configure --prefix=$RRD_PATH && make && sudo make install 
+    && cd rrdtool-$RRD_TOOL \
+    && ls -al rrdtool-$RRD_PATH \
+    && ./configure --prefix=$RRD_PATH \
+    && make \
+    && sudo make install 
 
 # ============ Installing FlowViewer =================
 # Retrieve FlowViewer sources from richb github.com repo - version 4.6.1 reflects refactoring of files

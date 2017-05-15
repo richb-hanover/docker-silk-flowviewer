@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 # Start up yaf
 
-/usr/sbin/apache2ctl -D FOREGROUND &
-echo "Starting Apache"
+sudo /usr/sbin/apache2ctl -D FOREGROUND &
+# echo "Starting Apache"
 
 
