@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start up yaf
-# docker listens on eth0
+# Ubuntu 14.04 defaults to eth0
 
 sudo nohup /usr/local/bin/yaf \
 --silk --ipfix=tcp \

@@ -17,18 +17,26 @@ echo "Status: $?"
 echo `ps ax | grep apache`
 
 # Start rwflowpack
-./start_rwflowpack.sh -D
+sudo ./start_rwflowpack.sh start -D
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start rwflowpack: $status"
   exit $status
 fi
 
-# # Start yaf
+# Start yaf
 ./start_yaf.sh -D
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start yaf: $status"
+  exit $status
+fi
+
+# Start FlowViewer programs
+./start_flowviewer.sh -D
+status=$?
+if [ $status -ne 0 ]; then
+  echo "Failed to start FlowViewer: $status"
   exit $status
 fi
 

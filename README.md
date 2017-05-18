@@ -1,4 +1,4 @@
-# docker-silk
+# docker-silk-flowviewer
 
 [![Build Status](https://img.shields.io/travis/redjack/docker-silk/master.svg)](https://travis-ci.org/redjack/docker-silk)
 
@@ -15,16 +15,21 @@ docker build -t flowviewer_silk .
 
 ## To run it and/or look around:
 
+(This starts web server on external port 81; receives flow exports on port 22055)
+
 ```
-docker run -d -p 8080:80 -p 2055:2055 flowviewer-silk 
-docker ps # to get container name
-docker exec -i -t <container-name> /bin/bash
-
-- or -
-docker run -d -p 9999:80 silk-flowviewer /usr/sbin/apache2ctl -D FOREGROUND
-then go to http://localhost:9999 
+docker run -d -p 82:80 -p 22055:2055 --name flowviewer_silk flowviewer_silk 
+docker exec -i -t flowviewer_silk /bin/bash
 ```
-References:
+
+To stop the container and remove its name
+
+```
+docker rm -f flowviewer_silk
+```
+
+Then go to http://localhost:82/, and get redirected
 
 
-FlowViewer 4.6 tar: https://superb-sea2.dl.sourceforge.net/project/flowviewer/FlowViewer_4.6.tar
+
+
