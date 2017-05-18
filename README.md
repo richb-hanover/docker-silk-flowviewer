@@ -15,7 +15,7 @@ docker build -t flowviewer_silk .
 
 ## To run it and/or look around:
 
-(This starts web server on external port 81; receives flow exports on port 22055)
+(This maps the web server to external port 82; and flow exports to external port 22055)
 
 ```
 docker run -d -p 82:80 -p 22055:2055 --name flowviewer_silk flowviewer_silk 
