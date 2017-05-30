@@ -28,7 +28,7 @@ To stop the container and remove its name
 docker rm -f flowviewer_silk
 ```
 
-Then go to http://localhost:82/, and get redirected
+Then go to http://localhost:82/, and get redirected to the home page.
 
 
 
